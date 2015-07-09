@@ -138,6 +138,10 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
+      config.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+      end
+
     end
   end
 end
