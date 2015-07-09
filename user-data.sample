@@ -44,3 +44,18 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
+    - name: dnsdock.service
+      enable: true
+      command: start
+      content: |
+        [Unit]
+        Description=dnsdock
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        EnvironmentFile=/etc/environment
+        ExecStartPre=/bin/sh -c '/usr/bin/docker rm -f dnsdock || ls > /dev/null'
+        ExecStartPre=/bin/sh -c '/usr/bin/docker pull tonistiigi/dnsdock'
+        ExecStart=/usr/bin/docker run -v /var/run/docker.sock:/var/run/docker.sock  --name dnsdock -p ${COREOS_PRIVATE_IPV4}:53:53/udp tonistiigi/dnsdock
+        ExecStop=/bin/sh -c '/usr/bin/docker stop dnsdock  || ls > /dev/null'
